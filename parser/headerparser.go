@@ -1,13 +1,14 @@
-package midparser
+package parser
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	mid "github.com/rickedb/gopenprotocol"
 )
 
-func parseHeader(pack string) (mid.Header, error) {
+func ParseHeader(pack string) (mid.Header, error) {
 	header := mid.Header{}
 	if len(pack) < 20 {
 		return header, errors.New("package does not have minimum length of 20 characters")
@@ -54,4 +55,36 @@ func parseHeader(pack string) (mid.Header, error) {
 	}
 
 	return header, nil
+}
+
+func PackHeader(header mid.Header) string {
+	pack := fmt.Sprintf("%04d", header.Length)
+	pack += fmt.Sprintf("%04d", header.Mid)
+	pack += fmt.Sprintf("%03d", header.Revision)
+	if header.NoAckFlag {
+		pack += "1"
+	} else {
+		pack += "0"
+	}
+	pack += fmt.Sprintf("%02d", header.StationID)
+	pack += fmt.Sprintf("%02d", header.SpindleID)
+	if header.SequenceNumber != nil {
+		pack += fmt.Sprintf("%2d", *header.SequenceNumber)
+	} else {
+		pack += fmt.Sprintf("%2s", " ")
+	}
+
+	if header.NumberOfMessageParts != nil {
+		pack += fmt.Sprintf("%2d", *header.NumberOfMessageParts)
+	} else {
+		pack += fmt.Sprintf("%2s", " ")
+	}
+
+	if header.MessagePartNumber != nil {
+		pack += fmt.Sprintf("%2d", *header.MessagePartNumber)
+	} else {
+		pack += fmt.Sprintf("%2s", " ")
+	}
+
+	return pack
 }

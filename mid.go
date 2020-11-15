@@ -1,8 +1,8 @@
 package mid
 
 type Mid interface {
-	parse(pack string)
-	pack() string
+	Parse(pack string) error
+	Pack() (string, error)
 }
 
 type Header struct {
